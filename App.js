@@ -5,27 +5,30 @@ import {LinearGradient} from "expo-linear-gradient";
 import {useState} from "react";
 import GameScreen from "./screens/GameScreen";
 import Colors from "./util/colors";
-
-function generateRandomBetween(min, max, exclude) {
-  const rndNum = Math.floor(Math.random() * (max - min)) + min;
-  if (rndNum === exclude) {
-    return generateRandomBetween(min, max, exclude);
-  } else {
-    return rndNum;
-  }
-}
+import GameOverScreen from "./screens/GameOverScreen";
 
 export default function App() {
   const [userNumber, setUserNumber] = useState(0)
+  const [gameIsOver, setGameIsOver] = useState(true)
 
   const pickedNumberHandler = (pickedNumber) => {
     setUserNumber(pickedNumber)
+    setGameIsOver(false)
   }
 
-  let screen = <StartGameScreen onPickNumber={pickedNumberHandler}/>
-  if (userNumber) {
-    screen = <GameScreen pickedNumber={userNumber} />
+  const gameOverHandler = () => {
+    setGameIsOver(true)
   }
+
+  let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />
+  if (userNumber) {
+    screen = <GameScreen pickedNumber={userNumber} onGameOver={gameOverHandler} />
+  }
+  if (userNumber && gameIsOver) {
+    screen = <GameOverScreen />
+  }
+
+
 
   return (
     <LinearGradient style={styles.rootScreen} colors={[Colors.primary700,Colors.accent500]}>

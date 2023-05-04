@@ -1,4 +1,4 @@
-import {View} from "react-native";
+import {StyleSheet, View} from "react-native";
 
 const GameOverScreen = () => {
   return (
@@ -9,3 +9,7 @@ const GameOverScreen = () => {
 }
 
 export default GameOverScreen
+
+const styles = StyleSheet.create({
+
+})
