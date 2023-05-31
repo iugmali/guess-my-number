@@ -1,25 +1,41 @@
 import { StatusBar } from 'expo-status-bar';
 import {ImageBackground, SafeAreaView, StyleSheet, View} from 'react-native';
-import StartGameScreen from "./screens/StartGameScreen";
+import StartGameScreen from "./src/screens/StartGameScreen";
 import {LinearGradient} from "expo-linear-gradient";
-import {useState} from "react";
-import GameScreen from "./screens/GameScreen";
-import Colors from "./util/colors";
-import GameOverScreen from "./screens/GameOverScreen";
+import {useCallback, useEffect, useState} from "react";
+import GameScreen from "./src/screens/GameScreen";
+import Colors from "./src/util/colors";
+import GameOverScreen from "./src/screens/GameOverScreen";
 import {useFonts} from "expo-font";
 import AppLoading from "expo-app-loading";
+import * as SplashScreen from 'expo-splash-screen';
+
 
 export default function App() {
   const [userNumber, setUserNumber] = useState(0)
   const [gameIsOver, setGameIsOver] = useState(true)
+  const [guessRounds, setGuessRounds] = useState(0)
 
   const [fontsLoaded] = useFonts({
     'open-sans': require('./assets/fonts/OpenSans-Regular.ttf'),
     'open-sans-bold': require('./assets/fonts/OpenSans-Bold.ttf')
   })
 
+  useEffect(() => {
+    const showSplashScreen = async () => {
+      await SplashScreen.preventAutoHideAsync();
+    }
+    showSplashScreen();
+  }, [])
+
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
   if (!fontsLoaded) {
-    return <AppLoading />
+    return null
   }
 
   const pickedNumberHandler = (pickedNumber) => {
@@ -27,8 +43,14 @@ export default function App() {
     setGameIsOver(false)
   }
 
-  const gameOverHandler = () => {
+  const gameOverHandler = (rounds) => {
     setGameIsOver(true)
+    setGuessRounds(rounds)
+  }
+
+  const startNewGameHandler = () => {
+    setUserNumber(0)
+    setGuessRounds(0)
   }
 
   let screen = <StartGameScreen onPickNumber={pickedNumberHandler} />
@@ -36,11 +58,11 @@ export default function App() {
     screen = <GameScreen pickedNumber={userNumber} onGameOver={gameOverHandler} />
   }
   if (userNumber && gameIsOver) {
-    screen = <GameOverScreen />
+    screen = <GameOverScreen pickedNumber={userNumber} roundsNumber={guessRounds} onStartNewGame={startNewGameHandler} />
   }
 
   return (
-    <LinearGradient style={styles.rootScreen} colors={[Colors.primary700,Colors.accent500]}>
+    <LinearGradient style={styles.rootScreen} colors={[Colors.primary700,Colors.accent500]} onLayout={onLayoutRootView}>
       <ImageBackground
         source={require('./assets/images/background.png')}
         resizeMode={"cover"}
