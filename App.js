@@ -7,7 +7,6 @@ import GameScreen from "./src/screens/GameScreen";
 import Colors from "./src/util/colors";
 import GameOverScreen from "./src/screens/GameOverScreen";
 import {useFonts} from "expo-font";
-import AppLoading from "expo-app-loading";
 import * as SplashScreen from 'expo-splash-screen';
 
 
